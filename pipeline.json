@@ -1,0 +1,85 @@
+{
+  "pipelineSpec": {
+    "components": {
+      "comp-make-it-big": {
+        "executorLabel": "exec-make-it-big"
+      },
+      "comp-random-data-generator": {
+        "executorLabel": "exec-random-data-generator"
+      }
+    },
+    "deploymentSpec": {
+      "executors": {
+        "exec-make-it-big": {
+          "container": {
+            "args": [
+              "KEDRO_VERTEXAI_DISABLE_CONFIG_HOOK=false KEDRO_CONFIG_RUN_ID={{$.pipeline_job_uuid}} KEDRO_CONFIG_JOB_NAME={{$.pipeline_job_name}} KEDRO_VERTEXAI_RUNNER_CONFIG='{\"storage_root\": \"bucket_name/gcs_suffix\"}'  kedro run -e local --pipeline __default__ --node \"make_it_big\" --runner kedro_vertexai.vertex_ai.runner.VertexAIPipelinesRunner"
+            ],
+            "command": [
+              "/bin/bash",
+              "-c"
+            ],
+            "image": "kedro-vertex-spark",
+            "resources": {
+              "cpuLimit": 0.2,
+              "memoryLimit": 0.067108864
+            }
+          }
+        },
+        "exec-random-data-generator": {
+          "container": {
+            "args": [
+              "KEDRO_VERTEXAI_DISABLE_CONFIG_HOOK=false KEDRO_CONFIG_RUN_ID={{$.pipeline_job_uuid}} KEDRO_CONFIG_JOB_NAME={{$.pipeline_job_name}} KEDRO_VERTEXAI_RUNNER_CONFIG='{\"storage_root\": \"bucket_name/gcs_suffix\"}'  kedro run -e local --pipeline __default__ --node \"random_data_generator\" --runner kedro_vertexai.vertex_ai.runner.VertexAIPipelinesRunner"
+            ],
+            "command": [
+              "/bin/bash",
+              "-c"
+            ],
+            "image": "kedro-vertex-spark",
+            "resources": {
+              "cpuLimit": 0.2,
+              "memoryLimit": 0.067108864
+            }
+          }
+        }
+      }
+    },
+    "pipelineInfo": {
+      "name": "kedro-vertex-spark"
+    },
+    "root": {
+      "dag": {
+        "tasks": {
+          "make-it-big": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-make-it-big"
+            },
+            "dependentTasks": [
+              "random-data-generator"
+            ],
+            "taskInfo": {
+              "name": "make-it-big"
+            }
+          },
+          "random-data-generator": {
+            "cachingOptions": {
+              "enableCache": true
+            },
+            "componentRef": {
+              "name": "comp-random-data-generator"
+            },
+            "taskInfo": {
+              "name": "random-data-generator"
+            }
+          }
+        }
+      }
+    },
+    "schemaVersion": "2.0.0",
+    "sdkVersion": "kfp-1.8.14"
+  },
+  "runtimeConfig": {}
+}

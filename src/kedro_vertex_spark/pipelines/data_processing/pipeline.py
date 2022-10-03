@@ -4,15 +4,19 @@ generated using Kedro 0.18.3
 """
 
 from kedro.pipeline import Pipeline, node, pipeline
+import string
+import random
 
 import pandas as pd
 import numpy as np
 
 def random_data():
-    return pd.DataFrame(np.random.randint(0,100,size=(10000, 400)), columns=list('A'*400))
+    cols = [''.join(random.choices(string.ascii_lowercase, k=10)) for _ in range(400)]
+    print(len(cols))
+    return pd.DataFrame(np.random.randint(0,100,size=(10000, 400)), columns=cols)
 
 def random_data_big(x):
-    x*x
+    return x*x
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -20,6 +24,7 @@ def create_pipeline(**kwargs) -> Pipeline:
         [
             node(
                 func=random_data,
+                inputs=[],
                 outputs="random_data",
                 name="random_data_generator",
             ),
@@ -29,5 +34,6 @@ def create_pipeline(**kwargs) -> Pipeline:
                 outputs="random_big_data",
                 name="make_it_big",
             ),
-        ]
+        ],
+
     )
