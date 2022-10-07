@@ -8,8 +8,24 @@ random_data:
   dataset: kedro_sample
   table_name: random_data
   project: dcc-manufacturing-dev-ejp
-random_big_data:
+random_big_data@pandas:
   type: pandas.GBQTableDataSet
   dataset: kedro_sample
   table_name: random_big_data
   project: dcc-manufacturing-dev-ejp
+random_big_data@spark:
+  type: spark.SparkDataSet
+  filepath: ""
+  file_format: "bigquery"
+  load_args:
+    table: kedro_sample:random_big_data
+
+# see docs https://cloud.google.com/dataproc/docs/tutorials/bigquery-connector-spark-example
+summed_data:
+  type: spark.SparkDataSet
+  file_format: "bigquery"
+  filepath: ""
+  load_args:
+    table: kedro_sample:summed_data
+  save_args:
+    table: kedro_sample:summed_data
